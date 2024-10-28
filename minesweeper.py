@@ -1,3 +1,4 @@
+
 # Copyright 2022, Tyler Brown
 
 # This is a simple terminal-based version of Minesweeper.
@@ -70,30 +71,42 @@ def create_board(length, width):
             board[i].append(Cell(mask=' ')) # note: this makes the Cell look empty
     return board
 
+# I intend to eventually switch this program to GUI instead of command line,
+# which will change the entire way the board is printed/displayed.
 def print_board(board):
     length = len(board)
     width = len(board[0])
     print()
-    # print the line at the top
+    # print the column numbers
+    print("   ", end="")
+    for i in range(width):
+        print("{:>4}".format(i + 1), end="") # right-justify column numbers to width 4
+    # then print a flat line
+    print()
+    print("   ", end="")
     for j in range(width):
-        print("----", end = "")
-    print("-", end = "")
+        print("----", end="")
+    print("-", end="")
     print()
     # print the rest of the board, row by row
+    # but to the left of that, print the row numbers
     for i in range(length):
+        print("{:>2} ".format(i + 1), end="") # right-justify row numbers to width 2
         for j in range(width):
-            print("| {} ".format(board[i][j]), end = "")
-        print("|", end = "")
+            print("| {} ".format(board[i][j]), end="")
+        print("|", end="")
         print()
+        # then print a flat line
+        print("   ", end="")
         for j in range(width):
-            print("----", end = "")
-        print("-", end = "")
+            print("----", end="")
+        print("-", end="")
         print()
 
 def create_bombs(board):
     length = len(board)
     width = len(board[0])
-    bomb_chance = 0.3
+    bomb_chance = 0.09 # was previously 0.3, which is too high
     for i in range(length):
         for j in range(width):
             #generate random number between 0 and 1
@@ -238,23 +251,25 @@ create_bombs(game_board)
 number_the_board(game_board)
 print_board(game_board)
 
-# keep going until the player is dead.
+########## this is the game loop
+# keep going until the player is dead or the game is won.
 # at the start, the player is not dead.
 dead = False
 while (dead == False):
     action = ''
     while(action != 'f' and action != 's'):
         # ask whether player wants to flag or step
-        action = input("\nWould you like to flag a cell, or take a step? ")
+        action = input("\nWould you like to flag a cell, or take a step? (f/s) ")
         if (action != ''):
             if (action != 'f' and action != 's'):
                 print("\nYou must choose between setting a flag (f) or taking a step (s).")
             
     # ask for the ordered pair
     # print("\nTo choose the cell, supply a row and a column.")
-    row = int(input("\nRow: "))
-    column = int(input("\nColumn: "))
+    row = int(input("\nRow: ")) - 1
+    column = int(input("\nColumn: ")) - 1
 
+    # flag, or step?
     if action == 'f':
         game_board[row][column].user_has_flagged()
     elif action == 's':
@@ -265,6 +280,7 @@ while (dead == False):
         else:
             game_board[row][column].mask = 'B'
 
+    # did you survive?
     if dead == True:
         print("\nGame over, man! Game over!")
         reveal_all_bombs(game_board)
@@ -272,4 +288,8 @@ while (dead == False):
     else:
         print_board(game_board)
 
-
+    # need to set up code to check whether the flags are correct
+    # once the player has either flagged or stepped in every cell.
+    # If they are correct, then congratulate the player.
+    # If there are any which are incorrect, then for now,
+    # print out the ordered pairs which are incorrect - I will decide what to do later.
