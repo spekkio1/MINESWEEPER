@@ -1,0 +1,4 @@
+Versions
+
+Version 0.5: Add row and column numbers to the board.
+  Make other small changes.
